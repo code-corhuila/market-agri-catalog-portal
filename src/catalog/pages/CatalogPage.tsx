@@ -1,5 +1,5 @@
 import { Sprout } from 'lucide-react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Button, EmptyState, PageHeader, Skeleton } from 'shell/ui';
 import { listProducts } from '../api/products';
 import { useRemote } from '../api/useRemote';
@@ -19,6 +19,9 @@ export function CatalogPage() {
   const page = pageFrom(params);
   const { remote, retry } = useRemote((signal) => listProducts(page, signal), String(page));
   const goTo = (target: number) => setParams({ page: String(target) });
+  // A bookmark or a hand-edited address can ask for a page past the last one.
+  const lastPage = remote.state === 'data' ? remote.data.meta.totalPages : 0;
+  const pastLast = remote.state === 'data' && remote.data.meta.total > 0 && page > lastPage;
 
   return (
     <section className="stack">
@@ -39,7 +42,14 @@ export function CatalogPage() {
           description="Vuelva pronto: los productores del Huila publican aquí sus cosechas."
         />
       )}
-      {remote.state === 'data' && remote.data.meta.total > 0 && (
+      {pastLast && (
+        <EmptyState
+          icon={Sprout}
+          title={`La página ${page} no existe.`}
+          action={<Link to={`?page=${lastPage}`}>Ir a la página {lastPage}</Link>}
+        />
+      )}
+      {remote.state === 'data' && remote.data.meta.total > 0 && !pastLast && (
         <>
           <ul className={styles.grid}>
             {remote.data.data.map((product) => (

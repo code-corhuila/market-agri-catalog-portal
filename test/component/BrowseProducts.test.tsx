@@ -1,5 +1,5 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { Link, MemoryRouter, Route, Routes } from 'react-router-dom';
 import { apiClient } from 'shell/apiClient';
 import App from '../../src/App';
 import { apiError } from '../doubles/shell/apiClient';
@@ -14,6 +14,7 @@ function renderAt(path: string) {
       <Routes>
         <Route path="/catalogo/*" element={<App />} />
       </Routes>
+      <Link to="/catalogo?page=2">Ir a la página 2 (prueba)</Link>
     </MemoryRouter>,
   );
 }
@@ -66,6 +67,34 @@ describe('browse the catalog (HU-CAT-005, E-10)', () => {
     expect(await screen.findByText('Página 1 de 2')).toBeInTheDocument();
     expect(spy).toHaveBeenCalledWith(`${LIST}?page=1&limit=20`, expect.anything());
     expect(screen.getByRole('button', { name: 'Anterior' })).toBeDisabled();
+  });
+
+  // Review of #8, point 1: a page past the last one (a bookmark, a hand-edited address).
+  it('says when the page of the address is past the last one and links to the last', async () => {
+    get().mockResolvedValue(page([], { page: 9, total: 45 }));
+    renderAt('/catalogo?page=9');
+    expect(await screen.findByText('La página 9 no existe.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Ir a la página 3' })).toHaveAttribute(
+      'href',
+      '/catalogo?page=3',
+    );
+    expect(screen.queryByText(/Página 9 de/)).not.toBeInTheDocument();
+  });
+
+  // Review of #8, point 2: the answer of a request already replaced never wins, even if the
+  // client resolved it instead of rejecting it.
+  it('keeps the newest page when an older answer arrives late', async () => {
+    let answerFirst: (value: unknown) => void = () => {};
+    get()
+      .mockImplementationOnce(
+        () => new Promise<unknown>((done) => (answerFirst = done)) as Promise<never>,
+      )
+      .mockResolvedValueOnce(page([product(2, { name: 'Página dos' })], { page: 2, total: 45 }));
+    renderAt('/catalogo?page=1');
+    fireEvent.click(await screen.findByRole('link', { name: 'Ir a la página 2 (prueba)' }));
+    expect(await screen.findByRole('link', { name: 'Página dos' })).toBeInTheDocument();
+    await act(async () => answerFirst(page([product(1, { name: 'Página uno' })], { total: 45 })));
+    expect(screen.queryByRole('link', { name: 'Página uno' })).not.toBeInTheDocument();
   });
 
   it('guides an empty catalog instead of a blank page', async () => {

@@ -7,6 +7,8 @@ export type Remote<T> =
 /**
  * Loading, error and data of one request (Annex H, the four view states; "empty" is the page's
  * reading of the data). A new key cancels the request it replaces; `retry` asks again.
+ * `key` must name everything `load` reads (the page, the id): a new value of any of them is a
+ * new key, or the hook keeps showing the previous answer.
  */
 export function useRemote<T>(load: (signal: AbortSignal) => Promise<T>, key: string) {
   const [remote, setRemote] = useState<Remote<T>>({ state: 'loading' });
@@ -16,7 +18,10 @@ export function useRemote<T>(load: (signal: AbortSignal) => Promise<T>, key: str
     const controller = new AbortController();
     setRemote({ state: 'loading' });
     load(controller.signal).then(
-      (data) => setRemote({ state: 'data', data }),
+      // An answer to a replaced request never wins, whether the client rejects or resolves it.
+      (data) => {
+        if (!controller.signal.aborted) setRemote({ state: 'data', data });
+      },
       (error: ApiError) => {
         if (!controller.signal.aborted) setRemote({ state: 'error', error });
       },
