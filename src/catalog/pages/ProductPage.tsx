@@ -6,8 +6,15 @@ import { useRemote } from '../api/useRemote';
 import { RetryAlert } from '../components/RetryAlert';
 import { formatPesos, formatQuantity, unitName } from '../model/format';
 import { statusBadge } from '../model/product';
+import styles from './ProductPage.module.css';
 
-/** HU-CAT-005 scenario 3: one product (E-11) with its current price, status and producer. */
+/** Route of the purchase in transactions-portal, as the container mounts it (ADR-021). */
+const CHECKOUT_ROUTE = '/transacciones/comprar';
+
+/**
+ * HU-CAT-005 scenario 3: one product (E-11) with its current price, status and producer.
+ * HU-TXN-001: an available product links to its purchase; the checkout decides who may buy.
+ */
 export function ProductPage() {
   const id = useParams().id ?? '';
   const { remote, retry } = useRemote((signal) => getProduct(id, signal), id);
@@ -47,6 +54,11 @@ export function ProductPage() {
           <dd>{product.municipality}</dd>
         </dl>
       </Card>
+      {product.status === 'ACTIVE' && (
+        <Link to={`${CHECKOUT_ROUTE}/${product.id}`} className={styles.buy}>
+          Comprar
+        </Link>
+      )}
     </section>
   );
 }
