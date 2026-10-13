@@ -1,0 +1,24 @@
+/* A navigation that looks like the primary Button of shell/ui (design-system.md): it is a link,
+   not a button, so it keeps its address (open in a new tab, read by a screen reader as a link). */
+.buy {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-size: var(--text-base);
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.buy:hover {
+  background: var(--color-primary-hover);
+  text-decoration: none;
+}
+
+.buy:active {
+  background: var(--color-primary-active);
+}
