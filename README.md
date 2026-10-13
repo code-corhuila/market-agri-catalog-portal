@@ -7,7 +7,7 @@ ADR-021). UI of the products: browse and detail (anyone), publish, edit and dele
 The container mounts `./App` under `/catalogo/*`. Its HTTP client, session and design system
 (`shell/apiClient`, `shell/session`, `shell/useSession`, `shell/RequireAuth`, `shell/ui`) are the
 only ones the portal uses, never its own; `src/shell.d.ts` declares each one when a page starts
-using it (today only `shell/ui`). Styles only through `var(--…)` (`12-ux-ui/design-system.md`).
+using it (today `shell/apiClient` and `shell/ui`). Styles only through `var(--…)` (`12-ux-ui/design-system.md`).
 
 ```
 src/App.tsx            routes of the portal (./App) with its own 404; src/catalog/pages, model, api, components
