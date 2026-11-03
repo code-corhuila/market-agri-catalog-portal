@@ -26,7 +26,7 @@ describe('browse the catalog (HU-CAT-005, E-10)', () => {
     get().mockResolvedValue(
       page([
         product(1),
-        product(2, { name: 'Lulo', status: 'OUT_OF_STOCK', quantity: 0, price: 6000 }),
+        product(2, { name: 'Lulo', status: 'OUT_OF_STOCK', quantity: 0, priceCents: 600_000 }),
       ]),
     );
     renderAt('/catalogo');
