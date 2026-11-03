@@ -4,7 +4,7 @@ import { Badge, Breadcrumbs, Card, EmptyState, LoadingBlock, PageHeader } from '
 import { getProduct } from '../api/products';
 import { useRemote } from '../api/useRemote';
 import { RetryAlert } from '../components/RetryAlert';
-import { formatPesos, formatQuantity, unitName } from '../model/format';
+import { formatCents, formatQuantity, unitName } from '../model/format';
 import { statusBadge } from '../model/product';
 import styles from './ProductPage.module.css';
 
@@ -45,7 +45,7 @@ export function ProductPage() {
       <Card>
         <dl className="stack-sm">
           <dt className="subtle">Precio por {unitName(product.unit)}</dt>
-          <dd>{formatPesos(product.price)}</dd>
+          <dd>{formatCents(product.priceCents)}</dd>
           <dt className="subtle">Cantidad disponible</dt>
           <dd>{formatQuantity(product.quantity, product.unit)}</dd>
           <dt className="subtle">Productor</dt>
