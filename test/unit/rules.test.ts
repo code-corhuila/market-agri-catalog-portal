@@ -20,6 +20,19 @@ describe('portal rules (Annex H)', () => {
     expect(existsSync(SRC) && sources(SRC).length).toBeTruthy();
   });
 
+  // ADR-029 (catalog-portal#17, AC3): money arrives as priceCents and becomes text only in
+  // formatCents; no component reads a `price` field or divides an amount by itself.
+  it('reads money only as priceCents, formatted only by formatCents', () => {
+    const offenders = sources(SRC).filter((file) => {
+      const code = readFileSync(file, 'utf8');
+      return (
+        /(?<!styles)\.price\b|\bprice\s*:/.test(code) ||
+        (!file.endsWith('format.ts') && /\/\s*100\b/.test(code))
+      );
+    });
+    expect(offenders).toEqual([]);
+  });
+
   it('never calls fetch: every request goes through shell/apiClient', () => {
     const offenders = sources(SRC).filter((file) =>
       /\bfetch\s*\(/.test(readFileSync(file, 'utf8')),
