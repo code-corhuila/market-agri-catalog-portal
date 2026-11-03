@@ -1,16 +1,26 @@
-import { formatPesos, formatQuantity } from '../../src/catalog/model/format';
+import { formatCents, formatQuantity } from '../../src/catalog/model/format';
 import { statusBadge } from '../../src/catalog/model/product';
 
-// design-system.md, "Formats" and "Status badges": money from integer whole pesos (ADR-026), the
+// design-system.md, "Money", "Formats" and "Status badges": money from integer centavos (ADR-029), the
 // short unit in lists, and the status mapped to a colour by this domain, not by shell/ui.
 describe('catalog formats', () => {
   it.each([
-    [185000, '$ 185.000'],
-    [6000, '$ 6.000'],
-    [1250000, '$ 1.250.000'],
+    [18_500_000, '$ 185.000'],
+    [8_500_000, '$ 85.000'],
+    [600_000, '$ 6.000'],
+    [125_000_000, '$ 1.250.000'],
+    [100, '$ 1'],
     [0, '$ 0'],
-  ])('shows %i pesos as %s', (pesos, text) => {
-    expect(formatPesos(pesos)).toBe(text);
+  ])('shows %i centavos as %s: no decimals when the centavos are zero', (cents, text) => {
+    expect(formatCents(cents)).toBe(text);
+  });
+
+  it.each([
+    [8_500_050, '$ 85.000,50'],
+    [8_500_005, '$ 85.000,05'],
+    [5, '$ 0,05'],
+  ])('shows %i centavos as %s: the centavos only when they are not zero', (cents, text) => {
+    expect(formatCents(cents)).toBe(text);
   });
 
   it('shows a decimal quantity with its short unit', () => {
