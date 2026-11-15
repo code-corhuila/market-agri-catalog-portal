@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Badge, Card } from 'shell/ui';
-import { formatPesos, unitName } from '../model/format';
+import { formatCents, unitName } from '../model/format';
 import { statusBadge, type ProductView } from '../model/product';
 import styles from './ProductCard.module.css';
 
@@ -16,7 +16,7 @@ export function ProductCard({ product }: { product: ProductView }) {
         <Badge variant={badge.variant}>{badge.label}</Badge>
       </div>
       <p className={styles.price}>
-        <strong>{formatPesos(product.price)}</strong>
+        <strong>{formatCents(product.priceCents)}</strong>
         <span className="subtle"> / {unitName(product.unit)}</span>
       </p>
       <p className="subtle">

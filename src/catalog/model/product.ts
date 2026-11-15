@@ -9,8 +9,8 @@ export interface ProductView {
   category: string;
   unit: string;
   quantity: number;
-  /** Whole Colombian pesos per unit (ADR-026). */
-  price: number;
+  /** Integer centavos per unit (ADR-029): 18500000 is $ 185.000. */
+  priceCents: number;
   currency: 'COP';
   municipality: string;
   status: ProductStatus;
