@@ -1,5 +1,5 @@
 // ProductView and Page<T> of api-contract §4.2 / D-C24, as catalog-api (or the simulated mode)
-// answers them: price in whole pesos (ADR-026).
+// answers them: priceCents in integer centavos (ADR-029).
 export function product(n: number, overrides: Record<string, unknown> = {}) {
   return {
     id: `5e1f0c2a-7b3d-4e8f-9a6b-00000000000${n}`,
@@ -9,7 +9,7 @@ export function product(n: number, overrides: Record<string, unknown> = {}) {
     category: 'CAFE',
     unit: 'ARROBA',
     quantity: 12.5,
-    price: 185000,
+    priceCents: 18_500_000,
     currency: 'COP',
     municipality: 'Garzón',
     status: 'ACTIVE',
