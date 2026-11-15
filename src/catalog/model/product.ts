@@ -19,6 +19,23 @@ export interface ProductView {
   updatedAt: string;
 }
 
+/** ProductWrite of api-contract §4.2: what a producer sends to publish or edit (E-13, E-14). */
+export interface ProductWrite {
+  name: string;
+  category: string;
+  unit: string;
+  quantity: number;
+  /** Integer centavos per unit (ADR-029). */
+  priceCents: number;
+  municipality: string;
+}
+
+/** E-19 and E-20: a code and its label. */
+export interface Category {
+  code: string;
+  label: string;
+}
+
 /** D-C24: `{ data, meta }`. */
 export interface Page<T> {
   data: T[];
