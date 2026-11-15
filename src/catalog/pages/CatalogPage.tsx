@@ -1,6 +1,7 @@
 import { Sprout } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Button, EmptyState, PageHeader, Skeleton } from 'shell/ui';
+import { useSession } from 'shell/useSession';
 import { listProducts } from '../api/products';
 import { useRemote } from '../api/useRemote';
 import { ProductCard } from '../components/ProductCard';
@@ -22,12 +23,15 @@ export function CatalogPage() {
   // A bookmark or a hand-edited address can ask for a page past the last one.
   const lastPage = remote.state === 'data' ? remote.data.meta.totalPages : 0;
   const pastLast = remote.state === 'data' && remote.data.meta.total > 0 && page > lastPage;
+  // Only a producer publishes (E-13); the page itself is guarded too (RequireAuth).
+  const isProducer = useSession()?.user.role === 'PRODUCER';
 
   return (
     <section className="stack">
       <PageHeader
         title="Catálogo"
         subtitle="Productos del campo huilense, los más recientes primero."
+        actions={isProducer && <Link to="/catalogo/publicar">Publicar producto</Link>}
       />
       {remote.state === 'loading' && (
         <div className={styles.grid}>
