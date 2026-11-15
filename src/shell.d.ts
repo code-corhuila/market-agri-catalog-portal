@@ -29,6 +29,15 @@ declare module 'shell/ui' {
     Grid(props: { count?: number; withThumb?: boolean }): ReactNode;
   };
   export function LoadingBlock(props: { label?: string }): ReactNode;
+  /** Label, hint and error tied to one `<input>`, `<select>` or `<textarea>` by id. */
+  export function Field(props: {
+    label: string;
+    hint?: ReactNode;
+    error?: ReactNode;
+    required?: boolean;
+    children: import('react').ReactElement;
+    className?: string;
+  }): ReactNode;
   export function Alert(props: {
     variant?: 'error' | 'warning' | 'info' | 'success';
     children: ReactNode;
@@ -75,4 +84,28 @@ declare module 'shell/apiClient' {
     patch<T>(path: string, body: unknown, options?: RequestOptions): Promise<T>;
     delete<T>(path: string, options?: RequestOptions): Promise<T>;
   };
+}
+
+declare module 'shell/session' {
+  export type Role = 'PRODUCER' | 'BUYER' | 'ADMIN';
+  export interface Session {
+    accessToken: string;
+    expiresAt: string;
+    user: { id: string; name: string; email: string; role: Role };
+  }
+  export function getSession(): Session | null;
+  export function setSession(session: Session): void;
+  export function clearSession(): void;
+}
+
+declare module 'shell/useSession' {
+  import type { Session } from 'shell/session';
+  export function useSession(): Session | null;
+}
+
+declare module 'shell/RequireAuth' {
+  import type { ReactNode } from 'react';
+  import type { Role } from 'shell/session';
+  /** No session: to the login, back here after it. Another role: "Acceso no permitido". */
+  export function RequireAuth(props: { children: ReactNode; roles?: Role[] }): ReactNode;
 }

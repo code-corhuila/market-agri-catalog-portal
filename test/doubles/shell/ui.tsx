@@ -1,5 +1,11 @@
 import type { LucideIcon } from 'lucide-react';
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import {
+  cloneElement,
+  useId,
+  type ButtonHTMLAttributes,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 import { Link } from 'react-router-dom';
 
 // Doubles of the container's design system (shell/ui): the same markup that matters to the tests
@@ -62,9 +68,34 @@ export function Alert({ children }: { variant?: string; children: ReactNode }) {
 
 export function Button({
   variant: _variant,
+  loading,
+  disabled,
   ...rest
-}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: string }) {
-  return <button {...rest} />;
+}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: string; loading?: boolean }) {
+  return <button {...rest} disabled={disabled || loading} />;
+}
+
+// The container's Field ties the label, the hint and the error to the control by id.
+export function Field({
+  label,
+  hint,
+  error,
+  children,
+}: {
+  label: string;
+  hint?: ReactNode;
+  error?: ReactNode;
+  required?: boolean;
+  children: ReactElement<{ id?: string }>;
+}) {
+  const id = useId();
+  return (
+    <div>
+      <label htmlFor={id}>{label}</label>
+      {cloneElement(children, { id })}
+      {error ? <p>{error}</p> : hint && <p>{hint}</p>}
+    </div>
+  );
 }
 
 export function Breadcrumbs({ items }: { items: { label: string; to?: string }[] }) {
